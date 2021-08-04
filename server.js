@@ -33,28 +33,70 @@ app.get('/api/exercise', async(req, res) => {
     }
 })
 
-app.post('/api/exercise', async(request, response) => {
+app.get('/pr', (req, res) => {
+    if (!process.env.NODE_ENV) {
+        res.send('no thing')
+    } else {
+        res.json({ processIs: pr })
+    }
+})
+
+app.post('/api/exercise', async(req, res) => {
     try {
         const { name, reps, duration } = req.body
-        const insert = 'INSERT INTO exercise '
-        const newWorkout = {
+        const insert = 'INSERT INTO exercise (name, reps, duration) VALUES ($1, $2, $3) RETURNING *'
+        const newExercise = [
             name,
             reps,
             duration
-        }
-        console.log('working')
+        ]
+        await pool.query(insert, newExercise, (err, res) => {
+            if (err) {
+                console.log(err.stack)
+            }
+            res.status(200).send(res.rows[0])
+            console.log('working')
+        })
     } catch (error) {
         console.log(error)
         res.status(500).json(error)
     }
 })
 
-app.delete('/', async(request, response) => {
-
+app.delete('/api/exercise', async(request, response) => {
+    const deleteCmd = 'DELETE FROM exercise WHERE exercise_id = 3 RETURNING *'
+    try {
+        const { id } = request.params
+        let { rows } = await pool.query(deleteCmd);
+        response.status(200).json(rows[0])
+    } catch (error) {
+        console.log('Server error')
+        response.status(500).json(error)
+    }
 })
 
-app.put('/', async(request, response) => {
-
+app.delete('/api/exercise', async(request, response) => {
+    app.patch('', async(request, response) => {
+        try {
+            const { id } = request.params;
+            const { name, reps, duration } = request.body
+            if (name == null || reps == null || typeof duration !== 'number') {
+                response.status(400).send("Bad Request")
+            } else {
+                const updateCmd = 'UPDATE exercise SET name = $1, reps = $2, duration = $3 WHERE exercise_id = $4 RETURNING *'
+                const values = [name, reps, duration, id]
+                await pool.query(updateCmd, values, (err, res) => {
+                    if (err) {
+                        console.log(err.stack)
+                    }
+                    response.status(201).send(res.rows[0])
+                })
+            }
+        } catch (error) {
+            console.log('Server error')
+            response.status(500).json(error)
+        }
+    })
 })
 
 app.listen(PORT, () => {
