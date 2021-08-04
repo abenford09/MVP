@@ -27,9 +27,11 @@ app.get('/api/exercise', async(req, res) => {
     })
 })
 
-app.post('/exercise', async(request, response) => {
+app.post('/api/exercise', async(request, response) => {
     try {
-        console.log('working')
+        const { name, reps, duration } = req.body
+        const
+            console.log('working')
     } catch (error) {
         console.log(error)
         res.status(500).json(error)
