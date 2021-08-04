@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const { Pool } = require('pg')
 const cors = require('cors')
-const db = require('./db/dbCON');
+const pool = require('./db/dbCON');
 // const dot = require('dotenv').config()
 
 const PORT = process.env.PORT || 7070;
@@ -23,10 +23,14 @@ app.use(express.json())
 
 // get route
 app.get('/api/exercise', async(req, res) => {
-    db.query("SELECT * FROM exercise", (err, data) => {
-        res.status(200).send(rows);
+    try {
+        const { rows } = await pool.query("SELECT * FROM exercise")
+        res.status(200).json(rows);
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
         console.log('get works')
-    })
+    }
 })
 
 app.post('/api/exercise', async(request, response) => {
