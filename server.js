@@ -1,10 +1,16 @@
-const dot = require('dotenv').config()
 const express = require('express')
 const app = express()
+const { Pool } = require('pg')
 const cors = require('cors')
-const db = require('./db_configuration');
+const db = require('./db/dbCON');
+// const dot = require('dotenv').config()
 
-// const { Pool } = require('pg')
+const PORT = process.env.PORT || 7070;
+
+// middlewares
+app.use(express.static("public"))
+app.use(cors())
+app.use(express.json())
 
 // const pool = new Pool({
 //     user: 'postgres',
@@ -14,12 +20,8 @@ const db = require('./db_configuration');
 //     database: 'workout'
 // })
 
-const PORT = process.env.PORT || 7070;
 
-app.use(express.static("public"))
-app.use(cors())
-app.use(express.json())
-
+// get route
 app.get('/api/exercise', async(req, res) => {
     db.query("SELECT * FROM exercise", (err, data) => {
         res.status(200).send(rows);
@@ -30,8 +32,13 @@ app.get('/api/exercise', async(req, res) => {
 app.post('/api/exercise', async(request, response) => {
     try {
         const { name, reps, duration } = req.body
-        const
-            console.log('working')
+        const insert = 'INSERT INTO exercise '
+        const newWorkout = {
+            name,
+            reps,
+            duration
+        }
+        console.log('working')
     } catch (error) {
         console.log(error)
         res.status(500).json(error)
