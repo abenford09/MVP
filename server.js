@@ -75,28 +75,26 @@ app.delete('/api/exercise', async(request, response) => {
     }
 })
 
-app.delete('/api/exercise', async(request, response) => {
-    app.patch('', async(request, response) => {
-        try {
-            const { id } = request.params;
-            const { name, reps, duration } = request.body
-            if (name == null || reps == null || typeof duration !== 'number') {
-                response.status(400).send("Bad Request")
-            } else {
-                const updateCmd = 'UPDATE exercise SET name = $1, reps = $2, duration = $3 WHERE exercise_id = $4 RETURNING *'
-                const values = [name, reps, duration, id]
-                await pool.query(updateCmd, values, (err, res) => {
-                    if (err) {
-                        console.log(err.stack)
-                    }
-                    response.status(201).send(res.rows[0])
-                })
-            }
-        } catch (error) {
-            console.log('Server error')
-            response.status(500).json(error)
+app.patch('/api/exercise', async(request, response) => {
+    try {
+        const { id } = request.params;
+        const { name, reps, duration } = request.body
+        if (name == null || reps == null || typeof duration !== 'number') {
+            response.status(400).send("Bad Request")
+        } else {
+            const updateCmd = 'UPDATE exercise SET name = $1, reps = $2, duration = $3 WHERE exercise_id = $4 RETURNING *'
+            const values = [name, reps, duration, id]
+            await pool.query(updateCmd, values, (err, res) => {
+                if (err) {
+                    console.log(err.stack)
+                }
+                response.status(201).send(res.rows[0])
+            })
         }
-    })
+    } catch (error) {
+        console.log('Server error')
+        response.status(500).json(error)
+    }
 })
 
 app.listen(PORT, () => {

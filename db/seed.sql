@@ -14,3 +14,4 @@ exercise_id SERIAL PRIMARY KEY,
 INSERT INTO exercise (name, reps, duration) VALUES ('Push Up', 60, 60);
 INSERT INTO exercise (name, reps, duration) VALUES ('Pull Up', 10, 15);
 INSERT INTO exercise (name, reps, duration) VALUES ('Sit Up', 50, 60);
+INSERT INTO exercise (name, reps, duration) VALUES ('Dips', 50, 60);
